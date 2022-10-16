@@ -19,10 +19,6 @@ namespace CarSales.API.Model
         public string BrandName { get; set; } = string.Empty;
         public string ModelName { get; set; } = string.Empty;
 
-        //It will be displayed as Is On Sale in in querystring
-        [FromQuery(Name = "Is On Sale")]
-        public bool OnSale { get; set; }
-
         [FromQuery(Name = "Filter any word")]
         public string SearchTerm { get; set; } = string.Empty;
 

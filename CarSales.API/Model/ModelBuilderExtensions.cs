@@ -15,7 +15,7 @@ namespace CarSales.API.Controllers.Model
                  new Category { Id = 6, Brand = "Automatic" });
 
             modelBuilder.Entity<Product>().HasData(
-                new Product { Id = 1, CategoryId = 1, Brand = "Toyota", Model = "Camry", Year = 2011, SalePrice = 27656, onSale = true, engineSize = 2000 },
+                new Product { Id = 1, CategoryId = 1, Brand = "Toyota", Model = "Camry", Year = 2011, SalePrice = 27656, onSale = true, engineSize = 2000},
                 new Product { Id = 2, CategoryId = 1, Brand = "Ford", Model = "Kuga", Year = 2011, SalePrice = 35000, onSale = true, engineSize = 2000 },
                 new Product { Id = 3, CategoryId = 1, Brand = "Mercedes", Model = "E200", Year = 6123, SalePrice = 33000, onSale = true, engineSize = 2000 },
                 new Product { Id = 4, CategoryId = 1, Brand = "Hyundai", Model = "Veloster", Year = 6145, SalePrice = 125000, onSale = true, engineSize = 2000 },

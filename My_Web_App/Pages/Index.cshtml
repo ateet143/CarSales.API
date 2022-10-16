@@ -1,0 +1,82 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<h3>Add</h3>
+<form action="javascript:void(0);" method="POST" onsubmit="addItem()">
+    <input type="text" id="add-name" placeholder="New to-do">
+    <input type="submit" value="Add">
+</form>
+
+<div class="myclass"></div>
+@section Scripts {
+    <script>
+        let url = "https://localhost:7025/api/Products";
+        let productsList = document.getElementById("products-list");
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => showProducts(data))
+            .catch(ex => {
+                alert("Error!");
+                console.error(ex);
+            });
+
+        function showProducts(products) {
+            let html = '';
+            products.forEach(product => {
+                let categoryId = product.categoryId;
+                let carType ='';
+                switch(categoryId){
+                    case 1:
+                        carType = "Fast Car";
+                        break;
+                    case 2:
+                        carType = "Speeding Car";
+                        break;
+                    case 3:
+                        carType = "Wrackers";
+                        break;
+                    case 4:
+                        carType = "Two seater";
+                        break;
+                    case 5:
+                        carType = "Four Seater";
+                        break;
+                    case 6:
+                        carType = "Automatic";
+                        break;
+                }
+                let htmlSegment = `<div class="card mb-5" style="width: 18rem;">
+                                     <img class="card-img-top" src="..." alt="Card image cap">
+                                    
+                                     <ul class="list-group list-group-flush">
+                                     <li class="list-group-item">Car ID: ${product.id}</li>
+                                     <li class="list-group-item">Make: ${product.brand}</li>
+                                     <li class="list-group-item">Model: ${product.model }</li>
+                                     <li class="list-group-item">Year: ${product.year}</li>
+                                             <li class="list-group-item">Category: ${carType}</li>
+                                     <li class="list-group-item">Price: $${product.salePrice}</li>
+            
+                                     </ul>
+                                     <div class="card-body">
+                                    <a href="#" class="card-link">Update</a>
+                                    <a href="#" class="card-link">Delete</a>
+                                    </div>
+                                 </div>`;
+
+                html += htmlSegment;
+               
+               
+            });
+            let container = document.querySelector('.myclass');
+            container.innerHTML = html;
+           
+        }
+
+        renderUsers();
+
+    </script>
+}

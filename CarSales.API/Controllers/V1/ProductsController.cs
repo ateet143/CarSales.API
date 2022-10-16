@@ -1,13 +1,11 @@
 ﻿using CarSales.API.Controllers.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.IO.Pipes;
 using Microsoft.EntityFrameworkCore;
 using CarSales.API.Model;
-using System.Runtime.InteropServices;
 
-namespace CarSales.API.Controllers
+namespace CarSales.API.Controllers.V1
 {
+    [ApiVersion("1.0")]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
@@ -17,15 +15,15 @@ namespace CarSales.API.Controllers
         public ProductsController(ShopContext context)
         {
             _context = context;
-
             _context.Database.EnsureCreated();
+
         }
 
         [HttpGet]
         public async Task<ActionResult> GetAllProducts([FromQuery] ProductQueryParameters queryParameters)
         {
-           IQueryable<Product> products = _context.Products;
-           if(queryParameters.MinSalePrice != null)
+            IQueryable<Product> products = _context.Products;
+            if (queryParameters.MinSalePrice != null)
             {
                 products = products.Where(p => p.SalePrice >= queryParameters.MinSalePrice.Value);
             }
@@ -69,23 +67,24 @@ namespace CarSales.API.Controllers
                         queryParameters.ModelName.ToLower()));
             }
 
-           
-            if (queryParameters.OnSale)
-            {
-                products = products.Where(p => p.onSale);
-            }
-
-            if (!queryParameters.OnSale)
-            {
-                products = products.Where(p => !p.onSale);
-            }
-
 
             if (!string.IsNullOrEmpty(queryParameters.SearchTerm))
             {
-                products = products.Where( p => p.Brand.ToLower().Contains(queryParameters.SearchTerm.ToLower())  || 
+                products = products.Where(p => p.Brand.ToLower().Contains(queryParameters.SearchTerm.ToLower()) ||
                 p.Model.ToLower().Contains(queryParameters.SearchTerm.ToLower()));
             }
+
+            if (!string.IsNullOrEmpty(queryParameters.SortBy))
+            {
+                if (typeof(Product).GetProperty(queryParameters.SortBy) != null)
+                {
+                    products = products.OrderByCustom(queryParameters.SortBy, queryParameters.SortOrder);
+                }
+            }
+
+            products = products
+                .Skip(queryParameters.Size * (queryParameters.Page - 1))
+                .Take(queryParameters.Size);
 
             return Ok(await products.ToArrayAsync());
         }
@@ -94,12 +93,12 @@ namespace CarSales.API.Controllers
         public async Task<ActionResult> GetProduct(int id)
         {
             var product = await _context.Products.FindAsync(id);
-           
-            if(product == null)
+
+            if (product == null)
             {
                 return NotFound();
             }
-            
+
             return Ok(product);
         }
 
@@ -112,13 +111,13 @@ namespace CarSales.API.Controllers
             }
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
-            return CreatedAtAction("GetProduct",new { id = product.Id}, product);
+            return CreatedAtAction("GetProduct", new { id = product.Id }, product);
         }
 
         [HttpPut("id")]
-        public async Task<ActionResult<Product>> PutProduct(int id , Product product)
+        public async Task<ActionResult<Product>> PutProduct(int id, Product product)
         {
-            if(id != product.Id)
+            if (id != product.Id)
             {
                 return BadRequest();
             }
@@ -148,7 +147,7 @@ namespace CarSales.API.Controllers
         {
             var product = await _context.Products.FindAsync(id);
             if (product == null)
-             {
+            {
                 //this will be 404 response
                 return NotFound();
             }
@@ -158,14 +157,14 @@ namespace CarSales.API.Controllers
             return product;
         }
 
-        [HttpPost("Delete")] 
-        public async Task<ActionResult> DeleteMultiple([FromQuery(Name ="CAR ID")] int[] ids)
+        [HttpPost("Delete")]
+        public async Task<ActionResult> DeleteMultiple([FromQuery(Name = "CAR ID")] int[] ids)
         {
             var products = new List<Product>();
             foreach (var id in ids)
             {
                 var product = await _context.Products.FindAsync(id);
-                if(product == null)
+                if (product == null)
                 {
                     return NotFound();
                 }

@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace CarSales.API.Controllers.Model
 {
     public class Product
     {
+        private static int idGenerator = 0;
         [Required]
         public int Id { get; set; }
 
@@ -29,7 +31,12 @@ namespace CarSales.API.Controllers.Model
         [Required]
         public int engineSize { get; set; }
 
+
         [JsonIgnore]
         public virtual Category? Category { get; set; }
+
+       
+
+
     }
 }
