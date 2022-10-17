@@ -31,6 +31,8 @@ namespace CarSales.API.Controllers.Model
         [Required]
         public int engineSize { get; set; }
 
+       
+
 
         [JsonIgnore]
         public virtual Category? Category { get; set; }

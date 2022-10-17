@@ -43,6 +43,7 @@ builder.Services.AddCors(options =>
         builder
             .WithOrigins("https://localhost:7087")
             .WithHeaders("CarSales-api-version");
+          
     });
 });
 

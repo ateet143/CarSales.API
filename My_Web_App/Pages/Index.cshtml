@@ -4,79 +4,90 @@
     ViewData["Title"] = "Home page";
 }
 
-<h3>Add</h3>
-<form action="javascript:void(0);" method="POST" onsubmit="addItem()">
-    <input type="text" id="add-name" placeholder="New to-do">
-    <input type="submit" value="Add">
-</form>
+<div id="myData"></div>
 
-<div class="myclass"></div>
 @section Scripts {
     <script>
         let url = "https://localhost:7025/api/Products";
-        let productsList = document.getElementById("products-list");
-
-        fetch(url)
-            .then(response => response.json())
-            .then(data => showProducts(data))
-            .catch(ex => {
-                alert("Error!");
-                console.error(ex);
-            });
-
-        function showProducts(products) {
-            let html = '';
-            products.forEach(product => {
-                let categoryId = product.categoryId;
-                let carType ='';
-                switch(categoryId){
-                    case 1:
-                        carType = "Fast Car";
-                        break;
-                    case 2:
-                        carType = "Speeding Car";
-                        break;
-                    case 3:
-                        carType = "Wrackers";
-                        break;
-                    case 4:
-                        carType = "Two seater";
-                        break;
-                    case 5:
-                        carType = "Four Seater";
-                        break;
-                    case 6:
-                        carType = "Automatic";
-                        break;
-                }
-                let htmlSegment = `<div class="card mb-5" style="width: 18rem;">
-                                     <img class="card-img-top" src="..." alt="Card image cap">
-                                    
-                                     <ul class="list-group list-group-flush">
-                                     <li class="list-group-item">Car ID: ${product.id}</li>
-                                     <li class="list-group-item">Make: ${product.brand}</li>
-                                     <li class="list-group-item">Model: ${product.model }</li>
-                                     <li class="list-group-item">Year: ${product.year}</li>
-                                             <li class="list-group-item">Category: ${carType}</li>
-                                     <li class="list-group-item">Price: $${product.salePrice}</li>
-            
-                                     </ul>
-                                     <div class="card-body">
-                                    <a href="#" class="card-link">Update</a>
-                                    <a href="#" class="card-link">Delete</a>
-                                    </div>
-                                 </div>`;
-
-                html += htmlSegment;
-               
-               
-            });
-            let container = document.querySelector('.myclass');
-            container.innerHTML = html;
-           
+         
+        //function will create  and return bootstrap Card
+        function getCard(carJson){
+            let html = `<div class="card mb-5" style="width: 18rem;">
+                        <img class="card-img-top" src="..." alt="Card image cap">
+                        <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Car ID: ${carJson.id}</li>
+                                <li class="list-group-item">Make: ${carJson.brand}</li>
+                                <li class="list-group-item">Model: ${carJson.model}</li>
+                                <li class="list-group-item">Year: ${carJson.year}</li>
+                                <li class="list-group-item">Price: $${carJson.salePrice}</li>
+                        </ul>
+                        <div class="card-body">
+                        <a href="#" class="card-link">Update</a>
+                        <a href="#" class="card-link">Delete</a>
+                        </div>
+                        </div>`;
+         return html;
         }
 
-        renderUsers();
+        //function to display all the car object as a Card
+        function getItems() {
+            fetch(url)
+                .then(response => response.json())
+                .then(data => showProducts(data))
+                .catch(error => console.error('Unable to get items.', error));
+        }
 
+        //function to display only one car object as a card by car ID.
+        function getItem(id) {
+            fetch(`${url}/${id}`)
+                .then(response => response.json())
+                .then(data => document.getElementById('myData').innerHTML = getCard(data))
+                .catch(error => console.error('Unable to get items.', error));
+        }
+
+        function addItem() {
+            const item = {
+                id: 50,
+                categoryId:1,
+                brand: toota,
+                model: sfdsfds,
+                year: 2011,
+                salePrice: 2500,
+                onSale: true,
+                engineSize: 2500
+            };
+
+            fetch(url, {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                   
+                    },
+                    body: JSON.stringify(item)
+                })
+                    .then(response => response.json())
+                    .then(() => {
+                        getItems();
+                    })
+                    .catch(error => console.error('Unable to add item.', error));
+            }
+        
+        
+        function showProducts(products) {
+            //Get the div element from the body. We need this because we are going to fill the div with the Card of Car in our JSON file.
+            var mainContainer = document.getElementById("myData");
+            products.forEach(product => {
+                //we will create a new div element:
+                var div = document.createElement("div");
+                //Next we will fill that div with the Card from our JSON file.
+                div.innerHTML = getCard(product);
+                //append this div to our main container:
+                mainContainer.appendChild(div);
+            });
+        }
+
+        //getItems();
+       getItem(1);
+        
     </script>
 }
